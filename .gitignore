@@ -1,0 +1,22 @@
+.vscode
+.idea
+
+venv
+__pycache__
+
+output/*
+!output/.keep
+
+py310
+git
+
+train/*
+logs/*
+sd-models/*
+toml/autosave/*
+!sd-models/put stable diffusion model here.txt
+!logs/.keep
+
+tests/
+
+huggingface/

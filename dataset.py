@@ -32,17 +32,32 @@ class CustomDataset(BaseDataset):
 
     def load_data(self, images_dir, texts_dir):
         data = []
-        images = sorted(os.listdir(images_dir))
-        texts = sorted(os.listdir(texts_dir))
+        if texts_dir:
+            images = sorted(os.listdir(images_dir))
+            texts = sorted(os.listdir(texts_dir))
 
-        for image_file, text_file in zip(images, texts):
-            if image_file.endswith(('.png', '.jpg', '.jpeg', '.webp')) and text_file.endswith('.txt'):
-                with open(os.path.join(texts_dir, text_file), 'r') as file:
-                    response = file.read().strip()
-                data.append({
-                    "image_path": os.path.join(images_dir, image_file),
-                    "response": response
-                })
+            for image_file, text_file in zip(images, texts):
+                if image_file.endswith(('.png', '.jpg', '.jpeg', '.webp')) and text_file.endswith('.txt'):
+                    with open(os.path.join(texts_dir, text_file), 'r', encoding='utf-8') as file:
+                        response = file.read().strip()
+                    data.append({
+                        "image_path": os.path.join(images_dir, image_file),
+                        "response": response
+                    })
+        else:
+            for root, dirs, files in os.walk(images_dir):
+                for image_file in files:
+                    if image_file.endswith(('.png', '.jpg', '.jpeg', '.webp')):
+                        text_file = os.path.splitext(image_file)[0] + '.txt'
+                        text_path = os.path.join(root, text_file)
+                        if os.path.exists(text_path):
+                            with open(text_path, 'r', encoding='utf-8') as file:
+                                response = file.read().strip()
+                            data.append({
+                                "image_path": os.path.join(root, image_file),
+                                "response": response
+                            })
+
         return data
 
     def __getitem__(self, idx):
