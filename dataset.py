@@ -40,10 +40,18 @@ class CustomDataset(BaseDataset):
                 if image_file.endswith(('.png', '.jpg', '.jpeg', '.webp')) and text_file.endswith('.txt'):
                     with open(os.path.join(texts_dir, text_file), 'r', encoding='utf-8') as file:
                         response = file.read().strip()
-                    data.append({
-                        "image_path": os.path.join(images_dir, image_file),
-                        "response": response
-                    })
+                    try:
+                        with Image.open(os.path.join(root, image_file)) as img:
+                            # 尝试加载整个图片
+                            img.load()
+                        del img
+
+                        data.append({
+                            "image_path": os.path.join(root, image_file),
+                            "response": response
+                        })
+                    except Exception as e:
+                        print(f"Error loading image {image_file}: {e}")
         else:
             for root, dirs, files in os.walk(images_dir):
                 for image_file in files:
@@ -53,11 +61,18 @@ class CustomDataset(BaseDataset):
                         if os.path.exists(text_path):
                             with open(text_path, 'r', encoding='utf-8') as file:
                                 response = file.read().strip()
-                            data.append({
-                                "image_path": os.path.join(root, image_file),
-                                "response": response
-                            })
+                            try:
+                                with Image.open(os.path.join(root, image_file)) as img:
+                                    # 尝试加载整个图片
+                                    img.load()
+                                del img
 
+                                data.append({
+                                    "image_path": os.path.join(root, image_file),
+                                    "response": response
+                                })
+                            except Exception as e:
+                                print(f"Error loading image {image_file}: {e}")
         return data
 
     def __getitem__(self, idx):
