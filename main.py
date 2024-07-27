@@ -58,7 +58,12 @@ def main(args):
     def collate_fn(batch):
         questions, answers, images = zip(*batch)
         inputs = processor(
-            text=list(questions), images=list(images), return_tensors="pt", padding=True
+            text=list(questions), 
+            images=list(images), 
+            return_tensors="pt", 
+            padding=True,
+            max_length=1024,
+            truncation=True,
         )
         inputs = {key: value.to(device) for key, value in inputs.items()}
         return inputs, answers
